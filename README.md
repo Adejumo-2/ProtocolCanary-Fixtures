@@ -133,3 +133,18 @@ treated as untrusted input by any consumer.
 ## Code of Conduct
 
 See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Maintainers & Community
+
+**Maintainer:** [@Hollujay](https://github.com/Hollujay) — reachable via
+this repository's GitHub profile; no other official contact channel is
+published for this project.
+
+**Community:** There is no dedicated community channel yet. Contribution
+and discussion happen through GitHub
+[issues](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues)
+and pull requests on this repository.
+
+**Contributors:**
+
+[![Contributors](https://contrib.rocks/image?repo=StellarCanary/ProtocolCanary-Fixtures)](https://github.com/StellarCanary/ProtocolCanary-Fixtures/graphs/contributors)
