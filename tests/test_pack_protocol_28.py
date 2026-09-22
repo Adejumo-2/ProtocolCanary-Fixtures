@@ -10,6 +10,7 @@ on why CI does not require a live RPC endpoint.
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -24,6 +25,7 @@ sys.modules["validate"] = validate
 _spec.loader.exec_module(validate)
 
 PACK = REPO_ROOT / "protocol-28"
+CHANGELOG = REPO_ROOT / "CHANGELOG.md"
 
 EXPECTED_IDS_BY_SURFACE = {
     "xdr": {
@@ -63,6 +65,20 @@ class Protocol28PackTests(unittest.TestCase):
             if surface in by_surface:
                 by_surface[surface].add(fx.data.get("id"))
         self.assertEqual(by_surface, EXPECTED_IDS_BY_SURFACE)
+
+    def test_changelog_fixture_ids_still_exist_or_are_marked_removed(self) -> None:
+        changelog = CHANGELOG.read_text(encoding="utf-8")
+        unreleased = changelog.split("## [Unreleased]", 1)[1].split("\n## ", 1)[0]
+        actual_ids = {str(fx.data.get("id")) for fx in self.fixtures}
+
+        for line in unreleased.splitlines():
+            for fixture_id in re.findall(r"`(p\d+-[a-z0-9-]+)`", line):
+                if fixture_id not in actual_ids:
+                    status = line.lower()
+                    self.assertTrue(
+                        "removed" in status or "deprecated" in status,
+                        f"CHANGELOG.md references missing fixture id {fixture_id!r}",
+                    )
 
     def test_no_fixture_claims_cap_0086(self) -> None:
         # CAP-0086 is a documented gap (see docs/protocol-28.md); a fixture
