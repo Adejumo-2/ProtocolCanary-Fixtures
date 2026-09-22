@@ -28,7 +28,10 @@ Protocol specification / upstream implementation
                     v
           Compatibility Result
 ```
-
+[Protocol specification / upstream implementation](https://github.com/StellarCanary/Protocol-Canary)
+[Canonical fixture / ProtocolCanary-Fixtures](https://github.com/StellarCanary/ProtocolCanary-Fixtures)
+[Protocol-Canary](https://github.com/StellarCanary/Protocol-Canary)
+[Compatibility Result](https://github.com/StellarCanary/Protocol-Canary)
 `ProtocolCanary-Fixtures` defines **what** should be tested. The
 [`StellarCanary/Protocol-Canary`](https://github.com/StellarCanary/Protocol-Canary)
 CLI defines **how** the test is executed.
