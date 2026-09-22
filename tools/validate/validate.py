@@ -21,6 +21,8 @@ otherwise.
 """
 from __future__ import annotations
 
+import base64
+import binascii
 import sys
 import tomllib
 from dataclasses import dataclass, field
@@ -165,6 +167,13 @@ def validate_common_fields(fx: Fixture, report: Report) -> None:
                 )
 
 
+def _validate_base64(value: str, field_name: str, path: Path, report: Report) -> None:
+    try:
+        base64.b64decode(value, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        report.error(path, f"field {field_name!r} is not valid base64: {exc}")
+
+
 def validate_xdr_body(fx: Fixture, report: Report) -> None:
     data, path = fx.data, fx.path
 
@@ -182,10 +191,12 @@ def validate_xdr_body(fx: Fixture, report: Report) -> None:
             path, f"field 'kind' must be one of {sorted(XDR_KINDS)}, got {data['kind']!r}"
         )
 
-    _require(data, "value_base64", str, path, report)
+    if _require(data, "value_base64", str, path, report):
+        _validate_base64(data["value_base64"], "value_base64", path, report)
 
-    if ok_kind and data["kind"] == "encode-equals":
-        _require(data, "expected_base64", str, path, report)
+    if (ok_kind and data["kind"] == "encode-equals") or "expected_base64" in data:
+        if _require(data, "expected_base64", str, path, report):
+            _validate_base64(data["expected_base64"], "expected_base64", path, report)
 
 
 def validate_rpc_body(fx: Fixture, report: Report) -> None:

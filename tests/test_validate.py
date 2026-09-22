@@ -180,6 +180,32 @@ method = "get-network"
         report = self.run_validation({"a.toml": bad})
         self.assertTrue(any("'expect'" in e for e in report.errors))
 
+    def test_rejects_invalid_base64_in_value_base64(self) -> None:
+        bad = VALID_XDR.replace('value_base64 = "AAAAAA=="', 'value_base64 = "not-valid-base64!!!"')
+        report = self.run_validation({"a.toml": bad})
+        self.assertTrue(any("not valid base64" in e and "value_base64" in e for e in report.errors))
+
+    def test_rejects_malformed_padding_base64(self) -> None:
+        bad = VALID_XDR.replace('value_base64 = "AAAAAA=="', 'value_base64 = "AAAAA"')
+        report = self.run_validation({"a.toml": bad})
+        self.assertTrue(any("not valid base64" in e and "value_base64" in e for e in report.errors))
+
+    def test_rejects_invalid_base64_in_expected_base64(self) -> None:
+        bad = (
+            VALID_XDR.replace('kind = "decode-success"', 'kind = "encode-equals"')
+            + 'expected_base64 = "not-valid-base64!!!"\n'
+        )
+        report = self.run_validation({"a.toml": bad})
+        self.assertTrue(any("not valid base64" in e and "expected_base64" in e for e in report.errors))
+
+    def test_accepts_valid_base64_in_encode_equals(self) -> None:
+        good = (
+            VALID_XDR.replace('kind = "decode-success"', 'kind = "encode-equals"')
+            + 'expected_base64 = "AAAAAA=="\n'
+        )
+        report = self.run_validation({"a.toml": good})
+        self.assertEqual(report.errors, [])
+
 
 if __name__ == "__main__":
     unittest.main()
