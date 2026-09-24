@@ -19,7 +19,8 @@ To add one:
    docs — in that order of preference. Never cite a source you have not
    actually checked describes the specific behavior you are asserting.
 2. **Add source provenance.** Every fixture sets `source_reference` to an
-   authoritative URL or CAP identifier, and its header comment (a `#`
+   authoritative URL or CAP identifier (note: omitting it currently produces
+   a warning, not a validator error), and its header comment (a `#`
    comment block above the TOML body) explains, in prose, how the expected
    value was derived or observed — e.g. "built with the official
    `stellar-xdr` 28.0.0 crate against the CAP-0083 `StellarValue` type",
