@@ -30,6 +30,7 @@ CHANGELOG = REPO_ROOT / "CHANGELOG.md"
 EXPECTED_IDS_BY_SURFACE = {
     "xdr": {
         "p28-xdr-cap83-empty-tx-set",
+        "p28-xdr-cap83-empty-tx-set-malformed",
         "p28-xdr-cap85-external-ref-roundtrip",
         "p28-xdr-cap85-external-ref-malformed",
     },
