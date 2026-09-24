@@ -85,8 +85,8 @@ category = "cap-0083"
 description = "..."
 source_reference = "CAP-0083"          # optional but expected for protocol-specific fixtures
 required_capabilities = []              # optional, see fixture-contract.md
-input_file = "..."                      # optional, path relative to this file
-expected_file = "..."                   # optional
+input_file = "..."                      # optional, path relative to this file (currently unused by any fixture)
+expected_file = "..."                   # optional (currently unused by any fixture)
 ```
 
 Per-surface body (everything else in the file):
