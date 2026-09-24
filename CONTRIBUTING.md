@@ -43,6 +43,8 @@ To add one:
    and, if you added a new CAP or surface, the pack's `README.md`.
 8. **Run the repository tests**: `python3 -m unittest discover tests`.
 
+> **Note**: Do not add a `manifest.toml` or similar discovery/enumeration file. The loader recursively treats every `*.toml` file under `--fixtures-dir` as a fixture, so a manifest `.toml` file would be mis-parsed as a malformed fixture and fail the run (see [README.md](README.md#repository-relationship)).
+
 No fixture should be merged solely because it makes some consumer's CI
 green. If you cannot pin down the exact expected wire representation or
 host-function behavior from an authoritative source, **stop** — do not
@@ -102,6 +104,10 @@ and is released.
 - A claim about current live network state (a specific ledger sequence, a
   specific balance) unless the fixture is explicitly and narrowly scoped as
   a live-network check with its assumptions documented.
+- A `manifest.toml` or any discovery/enumeration file. The loader recursively
+  parses every `*.toml` file under `--fixtures-dir` as a fixture, so a manifest
+  file would be mis-parsed as a malformed fixture and fail validation (see
+  [README.md](README.md#repository-relationship)).
 
 ## Deprecating a fixture
 
