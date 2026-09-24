@@ -129,6 +129,18 @@ class ValidatorTests(unittest.TestCase):
         report = self.run_validation({"a.toml": bad})
         self.assertTrue(any("'kind'" in e for e in report.errors))
 
+    def test_rejects_xdr_type_not_in_xdr_types(self) -> None:
+        bad = VALID_XDR.replace('type = "StellarValue"', 'type = "LedgerEntry"')
+        report = self.run_validation({"a.toml": bad})
+        self.assertTrue(
+            any(
+                "LedgerEntry" in e
+                and "StellarValue" in e
+                and "ContractExecutable" in e
+                for e in report.errors
+            )
+        )
+
     def test_encode_equals_requires_expected_base64(self) -> None:
         bad = VALID_XDR.replace('kind = "decode-success"', 'kind = "encode-equals"')
         report = self.run_validation({"a.toml": bad})
