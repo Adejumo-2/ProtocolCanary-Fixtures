@@ -76,8 +76,8 @@ makes a mixed-protocol directory safe either way.
 
 | Pack | Status | Notes |
 |---|---|---|
-| [`protocol-28/`](protocol-28/) | Active | CAP-0083, CAP-0085 (XDR); Protocol 28 RPC identity; a Soroban simulation smoke fixture. See [`docs/protocol-28.md`](docs/protocol-28.md). |
-| [`protocol-27/`](protocol-27/) | Not yet populated | See [`protocol-27/README.md`](protocol-27/README.md) — fixtures are added only after their upstream behavior is independently verified, never as placeholders. |
+| [`protocol-28/`](protocol-28/) | Active | CAP-0083, CAP-0085 (XDR); Protocol 28 RPC identity; a Soroban simulation smoke fixture. Fixture counts by surface: **4 xdr, 1 rpc, 1 soroban** (6 total). See [`docs/protocol-28.md`](docs/protocol-28.md). |
+| [`protocol-27/`](protocol-27/) | Not yet populated | **0 fixtures.** See [`protocol-27/README.md`](protocol-27/README.md) — fixtures are added only after their upstream behavior is independently verified, never as placeholders. |
 
 ## Fixture format
 
