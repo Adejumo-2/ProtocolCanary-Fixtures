@@ -15,7 +15,8 @@ CI jobs, release workflows, and contributor scripts rely on these contracts. Any
 5. [`tools/badge/badge.py`](#toolsbadgebadgepy)
 6. [`tools/validate/validate.py`](#toolsvalidatevalidatepy)
 7. [`tools/validate/schema_sync.py`](#toolsvalidateschema_syncpy)
-8. [Observed Inconsistencies](#observed-inconsistencies)
+8. [`tools/evidence/capture_live.py`](#toolsevidencecapture_livepy)
+9. [Observed Inconsistencies](#observed-inconsistencies)
 
 ---
 
@@ -231,6 +232,45 @@ python3 tools/validate/schema_sync.py
 
 - **stdout**: `OK: schemas/fixture-v1.schema.json matches tools/validate/validate.py` on success.
 - **stderr**: Drift errors and summary on failure; usage message if any argument is supplied.
+
+---
+
+## `tools/evidence/capture_live.py`
+
+Captures live read-only RPC evidence from the approved endpoint and writes one CF-04 verification record per RPC fixture of a pack. Only the read-only methods CF-04 section 8 names are called, no credentials are used, and a record is written only for a capture that actually happened. See [`docs/live-verification.md`](live-verification.md).
+
+### Synopsis
+
+```bash
+python3 tools/evidence/capture_live.py PACK [--output-dir DIR] [--endpoint HOST]
+    [--local-endpoint URL] [--capture-method METHOD] [--timeout SECONDS]
+    [--verifier-version VERSION] [--dry-run]
+```
+
+### Options
+
+- `-h`, `--help`: show this help message and exit
+- `PACK`: the pack directory whose RPC fixtures are verified live
+- `--output-dir DIR`: where to write the captures and the records (default: `PACK/evidence/live`)
+- `--endpoint HOST`: the approved endpoint to call (default: the first approved endpoint)
+- `--local-endpoint URL`: a loopback mock endpoint to call instead of an approved one, for the tests and for a dry run on a fork
+- `--capture-method METHOD`: an extra read-only method to capture, on top of the ones the pack's fixtures need (repeatable)
+- `--timeout SECONDS`: how long one call may take before it is a failure (default: 30)
+- `--verifier-version VERSION`: the version to record for the verifier (default: the commit the script was read from)
+- `--dry-run`: make the calls and print what would be written, but write nothing
+
+### Exit Codes
+
+| Exit Code | Meaning |
+|---|---|
+| `0` | Success: every capture succeeded; the captures and the records were written (or printed, in a dry run). |
+| `1` | Capture error: a call failed, timed out or answered with something that is not a JSON-RPC result; no record was written for it. The same code is used for a refused method, endpoint or local endpoint. |
+| `2` | Command-line syntax error: missing the `PACK` argument, or an unknown option. |
+
+### Output Streams
+
+- **stdout**: the endpoint, the captures, the records and their outcomes; the documents that would be written in a dry run; help text when `--help` is invoked.
+- **stderr**: the reason each failed capture failed, and the `FAILED:` summary.
 
 ---
 

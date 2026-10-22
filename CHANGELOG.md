@@ -12,6 +12,25 @@ discussion and diff. New entries must include that link; see
 
 ### Added
 
+- `tools/evidence/capture_live.py` and `.github/workflows/live-evidence.yml`: the
+  scheduled read-only verification job (CF-04-E) that keeps the live RPC
+  evidence fresh (issue #368). The script calls only the read-only methods
+  CF-04 section 8 names (`getNetwork`, `getLatestLedger`, `getVersionInfo`)
+  on an approved endpoint, with no credentials, and refuses any other method
+  or endpoint before a request is made; a write call cannot be configured.
+  Each call that really happened is saved as a capture in the same envelope
+  the hand-taken corpus uses, and each RPC fixture gets a CF-04 verification
+  record with `method: "live-read-only"`, the SHA-256 of the fixture file,
+  `checkedAt` equal to the capture's `capturedAt`, and `observedProtocol`
+  copied from the real `getNetwork` answer. A call that fails, times out or
+  answers with something that is not a JSON-RPC result leaves no capture and
+  no record, and the run fails. The workflow runs on a weekly cron and
+  uploads the captures and the records as an artifact; the exact schedule,
+  endpoints, storage and record location stay maintainer decisions, each in
+  one place. `docs/live-verification.md` describes the schedule, the
+  endpoints, the outputs and the failure behaviour. Closes
+  [issue #368](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/368).
+
 - `tools/common/pack_limits.py`: Shared pack extraction limits approved under decision
   D-06 (CF-02 section 7, CF-06 section 6: 2,000 files, 16 MiB total uncompressed, 1 MiB per file,
   path depth 8) shared between `validate.py`, `generate.py`, and `pack.py`. `tools/validate/validate.py`
