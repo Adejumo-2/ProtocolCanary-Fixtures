@@ -1,0 +1,13 @@
+{
+  "verificationVersion": 1,
+  "fixtureId": "p28-xdr-contract-executable-stellar-asset-decode-failure",
+  "fixtureSha256": "fbe8b879952c571168647e5f21991617cae3503d553acc62e05702b2c71877e2",
+  "method": "structural",
+  "checkedAt": "2026-10-22T00:46:37Z",
+  "verifier": {
+    "name": "protocolcanary-fixtures-validate",
+    "version": "ff61db29547a079adf718988a9636a9d691f5cfa"
+  },
+  "outcome": "matched",
+  "evidenceRef": null
+}
