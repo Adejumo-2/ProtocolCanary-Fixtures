@@ -28,6 +28,35 @@ discussion and diff. New entries must include that link; see
   archive. Closes
   [issue #365](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/365).
   ([PR #423])
+- `tools/evidence/capture_live.py` and `.github/workflows/live-evidence.yml`: the
+  scheduled read-only verification job (CF-04-E) that keeps the live RPC
+  evidence fresh (issue #368). The script calls only the read-only methods
+  CF-04 section 8 names (`getNetwork`, `getLatestLedger`, `getVersionInfo`)
+  on an approved endpoint, with no credentials, and refuses any other method
+  or endpoint before a request is made; a write call cannot be configured.
+  Each call that really happened is saved as a capture in the same envelope
+  the hand-taken corpus uses, and each RPC fixture gets a CF-04 verification
+  record with `method: "live-read-only"`, the SHA-256 of the fixture file,
+  `checkedAt` equal to the capture's `capturedAt`, and `observedProtocol`
+  copied from the real `getNetwork` answer. A call that fails, times out or
+  answers with something that is not a JSON-RPC result leaves no capture and
+  no record, and the run fails. The workflow runs on a weekly cron and
+  uploads the captures and the records as an artifact; the exact schedule,
+  endpoints, storage and record location stay maintainer decisions, each in
+  one place. `docs/live-verification.md` describes the schedule, the
+  endpoints, the outputs and the failure behaviour. Closes
+  [issue #368](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/368).
+- `tools/evidence/record_structural.py`: writes CF-04 verification records for
+  the structural check of a pack. The tool runs the check, then writes one
+  record per fixture with the SHA-256 of the file as it is on disk, the
+  instant the check ran and `method: "structural"`; it writes nothing when a
+  fixture does not validate, never derives an instant from a date-only header
+  comment and never records a live observation. The 23 records of the
+  `protocol-28` pack are in `protocol-28/evidence/records/`,
+  `docs/verification-records.md` states what they say and what they do not,
+  and the validate workflow now checks them. Closes
+  [issue #366](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/366).
+  ([PR #424])
 - `tools/registry/diff.py`: Compares two fixture registries and reports which fixtures were
   added, removed or changed — the same id with a different file hash — so a pack release can
   be described from the registry data instead of by hand from `git log`. The output is three
@@ -659,6 +688,7 @@ discussion and diff. New entries must include that link; see
 [PR #380]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/380
 [PR #381]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/381
 [PR #423]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/423
+[PR #424]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/424
 [PR #433]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/433
 [PR #432]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/432
 [PR #431]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/431

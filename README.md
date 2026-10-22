@@ -109,6 +109,11 @@ data is in [`upstream-matrix.json`](upstream-matrix.json).
 The command-line behavior, exit codes, and output streams of repository tools
 are documented in [`docs/tools.md`](docs/tools.md).
 
+The scheduled job that keeps the live read-only RPC evidence fresh -- its
+schedule, the endpoints it calls, the captures and verification records it
+writes, and how it fails -- is described in
+[`docs/live-verification.md`](docs/live-verification.md).
+
 ## Protocol packs
 
 | Pack | Status | Notes |
