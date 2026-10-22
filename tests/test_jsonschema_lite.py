@@ -68,7 +68,15 @@ class KeywordTests(unittest.TestCase):
         for pattern in ("(", r"^\p{L}+$", r"^(?<a>x)$"):
             with self.subTest(pattern=pattern):
                 with self.assertRaises(lite.SchemaError) as caught:
-                    lite.validate("x", {"properties": {"id": {"pattern": pattern}}})
+                    lite.validate(
+                        {"id": "x"},
+                        {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "string", "pattern": pattern}
+                            },
+                        },
+                    )
                 self.assertIn("$.id", str(caught.exception))
                 self.assertIn(pattern, str(caught.exception))
 
