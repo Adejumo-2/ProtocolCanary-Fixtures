@@ -156,13 +156,41 @@ def main(argv: list[str]) -> int:
         target_dir = base_dir / f"protocol-{args.protocol}" / args.surface
 
     target_file = target_dir / f"{args.id}.toml"
-    if target_file.exists():
+    content = render_skeleton(args.surface, args.protocol, args.id, args.category)
+    created_dirs: list[Path] = []
+    missing: list[Path] = []
+    parent = target_dir
+    while not parent.exists():
+        missing.append(parent)
+        if parent.parent == parent:
+            break
+        parent = parent.parent
+    created_dirs = list(reversed(missing))
+    created_file = False
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        handle = target_file.open("x", encoding="utf-8")
+        created_file = True
+        with handle:
+            handle.write(content)
+    except FileExistsError:
+        for directory in reversed(created_dirs):
+            try:
+                directory.rmdir()
+            except OSError:
+                pass
         print(f"error: file already exists: {target_file}", file=sys.stderr)
         return 1
-
-    content = render_skeleton(args.surface, args.protocol, args.id, args.category)
-    target_dir.mkdir(parents=True, exist_ok=True)
-    target_file.write_text(content, encoding="utf-8")
+    except OSError as error:
+        try:
+            if created_file:
+                target_file.unlink()
+            for directory in reversed(created_dirs):
+                directory.rmdir()
+        except OSError:
+            pass
+        print(f"error: could not create {target_file}: {error}", file=sys.stderr)
+        return 1
 
     print(f"Created fixture skeleton at {target_file}")
     print("Next steps:")
