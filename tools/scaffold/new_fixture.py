@@ -165,10 +165,16 @@ def main(argv: list[str]) -> int:
         if parent.parent == parent:
             break
         parent = parent.parent
-    created_dirs = list(reversed(missing))
+    created_dirs: list[Path] = []
     created_file = False
     try:
-        target_dir.mkdir(parents=True, exist_ok=True)
+        for directory in reversed(missing):
+            try:
+                directory.mkdir()
+            except FileExistsError:
+                # Another process may have created it since the path walk.
+                continue
+            created_dirs.append(directory)
         handle = target_file.open("x", encoding="utf-8")
         created_file = True
         with handle:
@@ -182,13 +188,16 @@ def main(argv: list[str]) -> int:
         print(f"error: file already exists: {target_file}", file=sys.stderr)
         return 1
     except OSError as error:
-        try:
-            if created_file:
+        if created_file:
+            try:
                 target_file.unlink()
-            for directory in reversed(created_dirs):
+            except OSError:
+                pass
+        for directory in reversed(created_dirs):
+            try:
                 directory.rmdir()
-        except OSError:
-            pass
+            except OSError:
+                pass
         print(f"error: could not create {target_file}: {error}", file=sys.stderr)
         return 1
 
