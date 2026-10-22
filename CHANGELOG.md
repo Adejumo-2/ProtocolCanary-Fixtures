@@ -383,6 +383,17 @@ discussion and diff. New entries must include that link; see
 
 ### Changed
 
+- `tools/coverage/report.py --validator PATH` now reports a validator copy it cannot
+  use as one error line naming the path and the reason, and exits 1, instead of
+  dying with an internal `AssertionError` traceback. A file that is not Python, a
+  file with a syntax error, a module that raises while it is executed, and a module
+  that lacks the attributes and capability constants the report reads are all
+  rejected this way; a valid copy and the default behaviour are unchanged, and the
+  text and `--format json` reports of a normal run are byte-identical to before.
+  Closes
+  [issue #393](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/393).
+  ([PR #431])
+
 - `tools/pack/verify_archive.py --manifest` now checks the facts the manifest states about
   the archive, and not only its archive hash and pack digest. The file name, the size, the
   entry count, the uncompressed bytes, the version in the file name, the pack name, the
@@ -602,3 +613,4 @@ discussion and diff. New entries must include that link; see
 [#354]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/354
 [PR #380]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/380
 [PR #381]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/381
+[PR #431]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/431
