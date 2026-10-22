@@ -12,6 +12,22 @@ discussion and diff. New entries must include that link; see
 
 ### Added
 
+- `tools/pack/archive_digests.py` and `.github/workflows/archive-baseline.yml`:
+  a cross-platform baseline for the pack archive (issue #365). Every cell of
+  the platform and Python-version matrix builds the `protocol-28` archive with a
+  fixed version string and uploads the SHA-256 of the compressed `.tar.gz` and
+  of the uncompressed tar stream, together with the Python and zlib versions
+  that produced them; a final job compares the cells, fails when the
+  uncompressed digests differ (naming the first differing byte and the tar
+  member) and reports a compressed-digest difference as an observation only.
+  The first measured run found that the Windows checkout rewrote the fixture
+  files to CRLF, so the archive was not the same on every platform; `.gitattributes`
+  now checks the hashed files out with `eol=lf` and the second run agrees in
+  all nine cells. `docs/archive-reproducibility.md` records both runs and
+  states that no cross-platform byte equality is claimed for the compressed
+  archive. Closes
+  [issue #365](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/365).
+  ([PR #423])
 - `tools/evidence/capture_live.py` and `.github/workflows/live-evidence.yml`: the
   scheduled read-only verification job (CF-04-E) that keeps the live RPC
   evidence fresh (issue #368). The script calls only the read-only methods
@@ -671,6 +687,7 @@ discussion and diff. New entries must include that link; see
 [#354]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/354
 [PR #380]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/380
 [PR #381]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/381
+[PR #423]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/423
 [PR #424]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/424
 [PR #433]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/433
 [PR #432]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/432
