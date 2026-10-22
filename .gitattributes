@@ -5,10 +5,10 @@
 # CRLF endings by a merge, which made every change to it conflict across the
 # whole file; this rule keeps that from happening again.
 #
-# Only *.py is covered on purpose. Fixture files (*.toml), conformance vectors,
-# evidence captures and archives are never rewritten: their bytes are hashed
-# (pack digests, registry entries, archive checksums), so they get no text
-# normalization from git.
+# Only *.py is covered here. The hashed files (fixtures, conformance vectors,
+# evidence captures) are handled by the rules below: they are stored with LF
+# and checked out with LF, because their bytes are hashed (pack digests,
+# registry entries, archive checksums).
 *.py text eol=lf
 
 # The files whose bytes are hashed are checked out with LF on every platform,

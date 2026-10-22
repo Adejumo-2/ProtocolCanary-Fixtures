@@ -10,12 +10,13 @@ CI jobs, release workflows, and contributor scripts rely on these contracts. Any
 
 1. [`tools/pack/pack.py`](#toolspackpackpy)
 2. [`tools/pack/verify_archive.py`](#toolspackverify_archivepy)
-3. [`tools/registry/generate.py`](#toolsregistrygeneratepy)
-4. [`tools/release/manifest.py`](#toolsreleasemanifestpy)
-5. [`tools/badge/badge.py`](#toolsbadgebadgepy)
-6. [`tools/validate/validate.py`](#toolsvalidatevalidatepy)
-7. [`tools/validate/schema_sync.py`](#toolsvalidateschema_syncpy)
-8. [Observed Inconsistencies](#observed-inconsistencies)
+3. [`tools/pack/archive_digests.py`](#toolspackarchive_digestspy)
+4. [`tools/registry/generate.py`](#toolsregistrygeneratepy)
+5. [`tools/release/manifest.py`](#toolsreleasemanifestpy)
+6. [`tools/badge/badge.py`](#toolsbadgebadgepy)
+7. [`tools/validate/validate.py`](#toolsvalidatevalidatepy)
+8. [`tools/validate/schema_sync.py`](#toolsvalidateschema_syncpy)
+9. [Observed Inconsistencies](#observed-inconsistencies)
 
 ---
 
@@ -78,6 +79,53 @@ python3 tools/pack/verify_archive.py [--sha256 HEX] [--manifest PATH] archive
 
 - **stdout**: Verification status message (`OK: <archive>: ... valid; registry and pack digest match`); help text when `--help` is invoked.
 - **stderr**: Error diagnostics on failure.
+
+---
+
+## `tools/pack/archive_digests.py`
+
+Measures the archive's two digests and compares them across cells (issue #365, `docs/archive-reproducibility.md`). Builds the archive with `tools/pack/pack.py` and only reads the bytes back; it never changes the archive format or the compression settings.
+
+### Synopsis
+
+```bash
+python3 tools/pack/archive_digests.py build [--pack PACK] [--version VERSION]
+    [--output PATH] [--stream PATH] [--cell NAME]
+python3 tools/pack/archive_digests.py compare --results DIR
+    [--expected-cell CELL] [--expected-matrix JSON] [--summary-file PATH]
+```
+
+### Options
+
+`build`:
+
+- `-h`, `--help`: show this help message and exit
+- `--pack PACK`: pack directory to build (default: `protocol-28`)
+- `--version VERSION`: release version used to name the archive (default: `0.0.0`)
+- `--output PATH`: also write the result document here (default: stdout only)
+- `--stream PATH`: also write the uncompressed tar stream here (default: `stream.tar` next to `--output`)
+- `--cell NAME`: the name of the cell this measurement was made in (default: the platform and Python version)
+
+`compare`:
+
+- `-h`, `--help`: show this help message and exit
+- `--results DIR`: directory holding the result documents of the cells (required)
+- `--expected-cell CELL`: a cell that must be present; may be given more than once
+- `--expected-matrix JSON`: the matrix the cells come from, as JSON (`{"os": [...], "python": [...]}`); every cell it names must be present
+- `--summary-file PATH`: also write the report here (for example `$GITHUB_STEP_SUMMARY`)
+
+### Exit Codes
+
+| Exit Code | Meaning |
+|---|---|
+| `0` | Success: the digests were measured, or the cells agree on the uncompressed tar-stream digest. |
+| `1` | The digests differ between cells, a cell produced no digest, the cell count does not match the declared matrix, a result document is unreadable, or the archive could not be built. |
+| `2` | Command-line syntax error: missing `--results`, unknown options, or `--expected-matrix` that is not a JSON object. |
+
+### Output Streams
+
+- **stdout**: the result document (`build`) or the markdown table and report (`compare`); help text when `--help` is invoked.
+- **stderr**: error diagnostics; the comparison failures are repeated there as `error: …`.
 
 ---
 
