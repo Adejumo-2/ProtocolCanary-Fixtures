@@ -275,6 +275,11 @@ def run_compare(
             + ", ".join(missing)
             + " produced no digest document (the build or the artifact upload failed)"
         )
+    if expected_cells and len(results) > len(expected_cells):
+        failures.append(
+            f"inconsistency: the run produced {len(results)} cells but the matrix declares "
+            f"{len(expected_cells)}; the matrix and the cell list do not agree"
+        )
 
     uncompressed = {result.get("uncompressedSha256") for result in results}
     if len(uncompressed) > 1:
