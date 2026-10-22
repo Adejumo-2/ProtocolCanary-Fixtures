@@ -12,6 +12,23 @@ discussion and diff. New entries must include that link; see
 
 ### Added
 
+- `tools/pack/archive_digests.py` and `.github/workflows/archive-baseline.yml`:
+  a cross-platform baseline for the pack archive (issue #365). Every cell of
+  the platform and Python-version matrix builds the `protocol-28` archive with a
+  fixed version string and uploads the SHA-256 of the compressed `.tar.gz` and
+  of the uncompressed tar stream, together with the Python and zlib versions
+  that produced them; a final job compares the cells, fails when the
+  uncompressed digests differ (naming the first differing byte and the tar
+  member) and reports a compressed-digest difference as an observation only.
+  The first measured run found that the Windows checkout rewrote the fixture
+  files to CRLF, so the archive was not the same on every platform; `.gitattributes`
+  now checks the hashed files out with `eol=lf` and the second run agrees in
+  all nine cells. `docs/archive-reproducibility.md` records both runs and
+  states that no cross-platform byte equality is claimed for the compressed
+  archive. Closes
+  [issue #365](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/365).
+  ([PR #423])
+
 - `tools/common/pack_limits.py`: Shared pack extraction limits approved under decision
   D-06 (CF-02 section 7, CF-06 section 6: 2,000 files, 16 MiB total uncompressed, 1 MiB per file,
   path depth 8) shared between `validate.py`, `generate.py`, and `pack.py`. `tools/validate/validate.py`
@@ -576,3 +593,4 @@ discussion and diff. New entries must include that link; see
 [#354]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/354
 [PR #380]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/380
 [PR #381]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/381
+[PR #423]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/423
