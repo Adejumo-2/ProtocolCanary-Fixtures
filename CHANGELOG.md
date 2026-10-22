@@ -12,6 +12,21 @@ discussion and diff. New entries must include that link; see
 
 ### Added
 
+- `tools/registry/diff.py`: Compares two fixture registries and reports which fixtures were
+  added, removed or changed — the same id with a different file hash — so a pack release can
+  be described from the registry data instead of by hand from `git log`. The output is three
+  sorted lists keyed by fixture id — added, removed and changed — with the old and new file hash
+  for a changed fixture, plus a separate list of fixtures that only moved, and the pack digest of
+  each registry, in `text`, `json` or `markdown` (a CHANGELOG block) format.
+  Both inputs are validated against `schemas/registry-v1.schema.json` before they are compared,
+  and the rules a schema cannot express — a duplicate fixture id, an empty fixtures list — are
+  checked too. Comparing registries of different protocols is refused unless
+  `--allow-protocol-mismatch` is given. The exit code is 0 even when the registries differ, and
+  2 for unusable input. `make registry-diff OLD=... NEW=...` runs it; `tests/test_registry_diff.py`
+  covers the comparison, the validation rules, the command line and two registries generated from
+  this repository's own pack at two different states. Closes
+  [issue #338](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/338).
+
 - `tools/common/pack_limits.py`: Shared pack extraction limits approved under decision
   D-06 (CF-02 section 7, CF-06 section 6: 2,000 files, 16 MiB total uncompressed, 1 MiB per file,
   path depth 8) shared between `validate.py`, `generate.py`, and `pack.py`. `tools/validate/validate.py`
@@ -367,6 +382,7 @@ discussion and diff. New entries must include that link; see
 
 
 ### Changed
+
 
 - `tools/validate/validate.py` and `schemas/fixture-v1.schema.json` now
   reject a soroban `[expect]` table containing a key other than `kind` or
