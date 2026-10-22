@@ -11,6 +11,10 @@
 #                       needs the dev dependency `pip install coverage==7.16.2`
 #   make registry     - write PACK/registry-v1.json (tools/registry/generate.py);
 #                       PACK defaults to protocol-28. Not part of `make check`.
+#   make records      - write PACK/evidence/records/*.json, the CF-04 structural
+#                       verification records (tools/evidence/record_structural.py);
+#                       PACK defaults to protocol-28. Run it after a fixture
+#                       changes: a record holds the hash of the file it checked.
 #   make pack         - build dist/protocolcanary-fixtures-VERSION.tar.gz for PACK
 #                       (tools/pack/pack.py); VERSION is required, e.g. VERSION=1.0.0
 #   make check        - all of the above, in CI's order; stops at the first failure
@@ -20,7 +24,7 @@
 
 PACK ?= protocol-28
 
-.PHONY: validate badge badge-check test check-links coverage registry pack check
+.PHONY: validate badge badge-check test check-links coverage registry records pack check
 
 validate:
 	python3 tools/validate/validate.py
@@ -43,6 +47,9 @@ coverage:
 
 registry:
 	python3 tools/registry/generate.py $(PACK)
+
+records:
+	python3 tools/evidence/record_structural.py $(PACK)
 
 pack:
 	@test -n "$(VERSION)" || { echo "usage: make pack VERSION=1.0.0 [PACK=protocol-28]" >&2; exit 2; }
