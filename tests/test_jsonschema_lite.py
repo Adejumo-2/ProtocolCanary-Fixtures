@@ -78,7 +78,7 @@ class KeywordTests(unittest.TestCase):
                         },
                     )
                 self.assertIn("$.id", str(caught.exception))
-                self.assertIn(pattern, str(caught.exception))
+                self.assertIn(repr(pattern), str(caught.exception))
 
     def test_uncompilable_pattern_properties_key_is_a_schema_error(self) -> None:
         with self.assertRaises(lite.SchemaError) as caught:
