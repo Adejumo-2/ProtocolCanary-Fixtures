@@ -30,6 +30,17 @@ discussion and diff. New entries must include that link; see
   one place. `docs/live-verification.md` describes the schedule, the
   endpoints, the outputs and the failure behaviour. Closes
   [issue #368](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/368).
+- `tools/evidence/record_structural.py`: writes CF-04 verification records for
+  the structural check of a pack. The tool runs the check, then writes one
+  record per fixture with the SHA-256 of the file as it is on disk, the
+  instant the check ran and `method: "structural"`; it writes nothing when a
+  fixture does not validate, never derives an instant from a date-only header
+  comment and never records a live observation. The 23 records of the
+  `protocol-28` pack are in `protocol-28/evidence/records/`,
+  `docs/verification-records.md` states what they say and what they do not,
+  and the validate workflow now checks them. Closes
+  [issue #366](https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/366).
+  ([PR #424])
 - `tools/registry/diff.py`: Compares two fixture registries and reports which fixtures were
   added, removed or changed — the same id with a different file hash — so a pack release can
   be described from the registry data instead of by hand from `git log`. The output is three
@@ -660,6 +671,7 @@ discussion and diff. New entries must include that link; see
 [#354]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/issues/354
 [PR #380]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/380
 [PR #381]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/381
+[PR #424]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/424
 [PR #433]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/433
 [PR #432]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/432
 [PR #431]: https://github.com/StellarCanary/ProtocolCanary-Fixtures/pull/431

@@ -10,6 +10,8 @@ CI jobs, release workflows, and contributor scripts rely on these contracts. Any
 
 1. [`tools/pack/pack.py`](#toolspackpackpy)
 2. [`tools/pack/verify_archive.py`](#toolspackverify_archivepy)
+3. [`tools/evidence/record_structural.py`](#toolsevidenerecord_structuralpy)
+4. [`tools/registry/generate.py`](#toolsregistrygeneratepy)
 3. [`tools/registry/generate.py`](#toolsregistrygeneratepy)
 4. [`tools/release/manifest.py`](#toolsreleasemanifestpy)
 5. [`tools/badge/badge.py`](#toolsbadgebadgepy)
@@ -84,6 +86,40 @@ python3 tools/pack/verify_archive.py [--sha256 HEX] [--manifest PATH] archive
 
 - **stdout**: Verification status message (`OK: <archive>: ... valid; registry and pack digest match`); help text when `--help` is invoked.
 - **stderr**: Error diagnostics on failure.
+
+---
+
+## `tools/evidence/record_structural.py`
+
+Writes CF-04 verification records for the structural check of a pack (issue #366, `docs/verification-records.md`). Runs the structural validation, then writes one record per fixture with the SHA-256 of the fixture file, the instant the check ran and `method: "structural"`. It writes nothing when a fixture does not validate, never derives an instant from a header comment, and never records a live observation.
+
+### Synopsis
+
+```bash
+python3 tools/evidence/record_structural.py PACK [--output-dir DIR]
+    [--verifier-version VERSION] [--dry-run]
+```
+
+### Options
+
+- `-h`, `--help`: show this help message and exit
+- `PACK`: the pack directory to check (required)
+- `--output-dir DIR`: where to write the records (default: `PACK/evidence/records`)
+- `--verifier-version VERSION`: the version to record for the verifier (default: the commit the validator was read from)
+- `--dry-run`: run the check and report what would be written, but write nothing
+
+### Exit Codes
+
+| Exit Code | Meaning |
+|---|---|
+| `0` | Success: the pack validates and every record was written (or would be, with `--dry-run`). |
+| `1` | The records cannot be written: the pack does not validate, holds no fixture, or a record would not satisfy the CF-04 rules. Nothing is written. |
+| `2` | Command-line syntax error: missing `PACK` or unknown options. |
+
+### Output Streams
+
+- **stdout**: the number of records written and their paths; help text when `--help` is invoked.
+- **stderr**: error diagnostics; the validator's own findings when the pack does not validate.
 
 ---
 
