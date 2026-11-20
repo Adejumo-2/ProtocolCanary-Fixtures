@@ -438,6 +438,29 @@ class InvalidPackTests(PackCase):
             "does not exist",
         )
 
+    def test_registry_generation_with_spaces_in_paths(self) -> None:
+        """The registry generator handles spaces in directory and file paths."""
+        space_files = {
+            "xdr space dir/a.toml": A_TOML,
+            "rpc space dir/b.toml": B_TOML,
+            "xdr space dir/a.bin": PAYLOAD,
+        }
+        pack = self.make_pack(space_files, "pack with spaces in root")
+        raw_registry = generate.generate(pack)
+        registry = json.loads(raw_registry)
+
+        self.assertEqual(registry["registryVersion"], 1)
+        self.assertEqual(registry["protocol"], 28)
+        self.assertEqual(len(registry["fixtures"]), 2)
+
+        paths = [f["path"] for f in registry["fixtures"]]
+        self.assertIn("rpc space dir/b.toml", paths)
+        self.assertIn("xdr space dir/a.toml", paths)
+
+        xdr_fixture = next(f for f in registry["fixtures"] if f["id"] == "p28-xdr-a")
+        self.assertEqual(xdr_fixture["payloads"][0]["path"], "xdr space dir/a.bin")
+        self.assertTrue(registry["packDigest"].startswith("sha256:"))
+
     def test_a_payload_reference_that_escapes_the_pack(self) -> None:
         for reference in ("../secret.bin", "a/../../x", "/etc/passwd", "C:/x.bin", "a\\\\b.bin"):
             self.assert_invalid(
