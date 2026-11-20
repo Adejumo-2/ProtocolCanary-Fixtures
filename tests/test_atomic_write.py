@@ -403,8 +403,11 @@ class BaselineHashTest(unittest.TestCase):
     ``upstream/main`` at ec10f95, before this branch changed any tool, and
     re-recorded on 2026-11-20 when the Protocol 28 ScVal schema, null-map,
     scalar-endpoint and wide-integer fixtures (issues #503-#506) changed the
-    pack's content, and again for the StellarValue upgrade-bound, Soroban ext
-    V1 and AccountEntry inflationDest fixtures (issues #515, #518, #523): a content change legitimately moves all four hashes,
+    pack's content, and again on 2026-11-20 when the one-byte padding,
+    invalid ScVal discriminant/flag, Offer/Data LedgerEntry and muxed
+    operation-source fixtures (issues #507-#509, #514) changed it again, and
+    for the StellarValue upgrade-bound, Soroban ext V1 and AccountEntry
+    inflationDest fixtures (issues #515, #518, #523): a content change legitimately moves all four hashes,
     while the property being pinned stays the same -- the atomic write
     reproduces whatever bytes the tools produce.
 
@@ -419,13 +422,13 @@ class BaselineHashTest(unittest.TestCase):
 
     BASELINE = {
         "protocolcanary-fixtures-1.0.0.tar.gz":
-            "262e19a14106adab0135bd12eb6fb0b72fdb0049f2228e1ccdcc8f87895a493f",
+            "20eb9f089380b040772a0d2c3e21be0f7d36f2eaae4551f75b2d1c75efb3df56",
         "protocolcanary-fixtures-1.0.0.manifest.json":
-            "d8c403ae272fb0b480c77088ce744d195b6cfa713dac69218d899a1057f8727a",
+            "e0d416eeac25c2e38403e70d2fa1498c0b1097aa2faa21ef4d86ab9ecbc86258",
         "protocolcanary-fixtures-1.0.0.tar.gz.sha256":
-            "4a37c8cc8589deec1ae16b8d0ea31f91545db649db6baa6843027706c01be488",
+            "bf55188e4e579bfb336538778497f5bfd029d9a7add2dfc1ce57f3ffbdb6b774",
         "registry-v1.json":
-            "ecfdb2c203cf21d852a6091f419239d30c60de64b2475935ca633cfb60b62f2a",
+            "5ace434ef825d874704ae4fe2f16dc5b805d5f6fa9cac6fc4f5439628d205fb7",
     }
 
     def setUp(self) -> None:
