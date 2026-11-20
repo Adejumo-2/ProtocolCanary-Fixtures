@@ -147,5 +147,72 @@ class ScValDepthVectorTests(unittest.TestCase):
                     scval_xdr.decode(vector_bytes(vector))
 
 
+class ScValDepthHelperTests(unittest.TestCase):
+    """Direct unit tests for container_depth and follow_single_child helpers."""
+
+    def test_container_depth_primitives_return_zero(self) -> None:
+        primitives = [
+            ("u32", 10),
+            ("bool", True),
+            ("symbol", "sym"),
+            ("i32", -5),
+            ("void", None),
+        ]
+        for val in primitives:
+            with self.subTest(primitive=val):
+                self.assertEqual(container_depth(val), 0)
+
+    def test_container_depth_empty_containers_return_one(self) -> None:
+        empty_containers = [
+            ("vec", []),
+            ("vec", None),
+            ("map", []),
+            ("map", None),
+        ]
+        for val in empty_containers:
+            with self.subTest(container=val):
+                self.assertEqual(container_depth(val), 1)
+
+    def test_container_depth_nested_structures(self) -> None:
+        # 2-level vector of empty vectors
+        self.assertEqual(container_depth(("vec", [("vec", [])])), 2)
+        # 2-level vector containing primitive leaves
+        self.assertEqual(container_depth(("vec", [("vec", [("u32", 1)])])), 2)
+        # Map containing nested vector in values
+        self.assertEqual(
+            container_depth(("map", [(("symbol", "k"), ("vec", [("u32", 42)]))])),
+            2,
+        )
+        # 3-level nesting: vec -> map -> vec
+        self.assertEqual(
+            container_depth(("vec", [("map", [(("vec", []), ("u32", 1))])])),
+            3,
+        )
+
+    def test_follow_single_child_traversal_and_boundaries(self) -> None:
+        # Leaf node unmodified
+        leaf = ("u32", 10)
+        self.assertEqual(follow_single_child(leaf), leaf)
+
+        # Empty containers unmodified
+        empty_vec = ("vec", [])
+        self.assertEqual(follow_single_child(empty_vec), empty_vec)
+        empty_map = ("map", [])
+        self.assertEqual(follow_single_child(empty_map), empty_map)
+
+        # Multi-child lists unmodified
+        multi_vec = ("vec", [("u32", 1), ("u32", 2)])
+        self.assertEqual(follow_single_child(multi_vec), multi_vec)
+        multi_map = ("map", [(("symbol", "a"), ("u32", 1)), (("symbol", "b"), ("u32", 2))])
+        self.assertEqual(follow_single_child(multi_map), multi_map)
+
+        # Single-child paths are unwrapped recursively
+        single_vec_nested = ("vec", [("vec", [("u32", 99)])])
+        self.assertEqual(follow_single_child(single_vec_nested), ("u32", 99))
+
+        single_map_nested = ("map", [(("symbol", "k"), ("u32", 77))])
+        self.assertEqual(follow_single_child(single_map_nested), ("u32", 77))
+
+
 if __name__ == "__main__":
     unittest.main()
