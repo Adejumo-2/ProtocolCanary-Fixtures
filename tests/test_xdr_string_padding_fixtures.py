@@ -96,7 +96,7 @@ class OneBytePaddingFixtureTests(unittest.TestCase):
                 _, _, good = _load(directory, valid_id)
                 _, text, bad = _load(directory, bad_id)
                 self.assertEqual(len(good), len(bad))
-                diff = [i for i, (a, b) in enumerate(zip(good, bad)) if a != b]
+                diff = [i for i, (a, b) in enumerate(zip(good, bad, strict=True)) if a != b]
                 self.assertEqual(diff, [len(good) - 1])
                 self.assertEqual(bad[-1], 0x01)
                 self.assertIn(f"offset {len(good) - 1}", text)
