@@ -6,6 +6,7 @@ directories to verify that root file checking behaves deterministically.
 from __future__ import annotations
 
 import io
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -126,6 +127,53 @@ class TestCheckRootFiles(unittest.TestCase):
             self.assertIn("README.md", entries)
             self.assertIn("Makefile", entries)
             self.assertIn("docs", entries)
+            self.assertNotIn(".git", entries)
+
+    def test_get_root_entries_called_process_error_fallback(self) -> None:
+        """get_root_entries falls back to filesystem scanning when git command fails."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            (temp_path / "README.md").write_text("Hello\n", encoding="utf-8")
+            (temp_path / "src").mkdir()
+            (temp_path / ".git").mkdir()
+
+            with patch(
+                "subprocess.run",
+                side_effect=subprocess.CalledProcessError(returncode=128, cmd=["git", "ls-files"]),
+            ):
+                entries = get_root_entries(temp_path)
+
+            self.assertIn("README.md", entries)
+            self.assertIn("src", entries)
+            self.assertNotIn(".git", entries)
+
+    def test_get_root_entries_oserror_fallback(self) -> None:
+        """get_root_entries falls back to filesystem scanning when subprocess raises OSError."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            (temp_path / "CONTRIBUTING.md").write_text("Guide\n", encoding="utf-8")
+            (temp_path / "tools").mkdir()
+            (temp_path / ".git").mkdir()
+
+            with patch("subprocess.run", side_effect=OSError("permission denied")):
+                entries = get_root_entries(temp_path)
+
+            self.assertIn("CONTRIBUTING.md", entries)
+            self.assertIn("tools", entries)
+            self.assertNotIn(".git", entries)
+
+    def test_get_root_entries_empty_stdout_fallback(self) -> None:
+        """get_root_entries falls back to filesystem scanning when git output is empty."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            (temp_path / "Makefile").write_text("all:\n", encoding="utf-8")
+            (temp_path / ".git").mkdir()
+
+            completed = subprocess.CompletedProcess(args=["git", "ls-files"], returncode=0, stdout="")
+            with patch("subprocess.run", return_value=completed):
+                entries = get_root_entries(temp_path)
+
+            self.assertIn("Makefile", entries)
             self.assertNotIn(".git", entries)
 
     def test_main_clean_repo_succeeds(self) -> None:
