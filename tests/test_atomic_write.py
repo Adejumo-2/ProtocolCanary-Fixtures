@@ -403,7 +403,10 @@ class BaselineHashTest(unittest.TestCase):
     ``upstream/main`` at ec10f95, before this branch changed any tool, and
     re-recorded on 2026-11-20 when the Protocol 28 ScVal schema, null-map,
     scalar-endpoint and wide-integer fixtures (issues #503-#506) changed the
-    pack's content: a content change legitimately moves all four hashes,
+    pack's content, and again on 2026-11-20 when the one-byte padding,
+    invalid ScVal discriminant/flag, Offer/Data LedgerEntry and muxed
+    operation-source fixtures (issues #507-#509, #514) changed it again: a
+    content change legitimately moves all four hashes,
     while the property being pinned stays the same -- the atomic write
     reproduces whatever bytes the tools produce.
 
@@ -418,13 +421,13 @@ class BaselineHashTest(unittest.TestCase):
 
     BASELINE = {
         "protocolcanary-fixtures-1.0.0.tar.gz":
-            "4ba0cd506a3e26601759dbc3885a88e5721a96367974bc0b1838ade0c3b43f89",
+            "e0e330597fc15dd4b42d2027d37d8a6139699c5f0b82c606e8baa2dac9aa1173",
         "protocolcanary-fixtures-1.0.0.manifest.json":
-            "54348170d10e8b0a8fcd9c2b18dba113a546983dfbfd60c6b6a6fb67285ca0bc",
+            "3dac5498b98909b19847367ea5e5abcd46083bd293abdff9bd964e7db9c37d81",
         "protocolcanary-fixtures-1.0.0.tar.gz.sha256":
-            "33801c3864d694389307619e833ec4a7521d883be065634d3433114454e8ded5",
+            "1d0181484331ea144f7541ab32f5e698df7e369789e9b81eec33d6c7862a4a46",
         "registry-v1.json":
-            "cecd3fc528955f214e988c11f4e6fac13a7e4462168c13e195b43ea0815e13e8",
+            "0bd44efe14a941a351fae633b9f6d3566abde316ea862611eaff660b12c8e240",
     }
 
     def setUp(self) -> None:
