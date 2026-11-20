@@ -197,6 +197,34 @@ class FailureSafetyTest(unittest.TestCase):
         self.assertEqual(path.read_bytes(), b"original")
         self.assertEqual(_temp_files(self.dir), [])
 
+    def test_missing_parent_directory_raises_oserror_without_leaks(self) -> None:
+        """Attempting to write to a nonexistent parent directory raises OSError."""
+        missing_dir = Path(self.dir) / "no-such-parent"
+        path = missing_dir / "target.txt"
+
+        with self.assertRaises(OSError):
+            write_bytes_atomic(path, b"should fail")
+
+        self.assertFalse(missing_dir.exists())
+        self.assertFalse(path.exists())
+        self.assertEqual(_temp_files(self.dir), [])
+
+    def test_existing_directory_destination_raises_oserror_without_leaks(self) -> None:
+        """Attempting to write when destination is an existing directory raises OSError."""
+        dest_dir = Path(self.dir) / "existing-dir"
+        dest_dir.mkdir()
+        marker_file = dest_dir / "marker.txt"
+        marker_file.write_bytes(b"preserved content")
+
+        with self.assertRaises(OSError):
+            write_bytes_atomic(dest_dir, b"should fail")
+
+        self.assertTrue(dest_dir.is_dir())
+        self.assertTrue(marker_file.is_file())
+        self.assertEqual(marker_file.read_bytes(), b"preserved content")
+        self.assertEqual(_temp_files(self.dir), [])
+        self.assertEqual(_temp_files(str(dest_dir)), [])
+
 
 class TempFileLocationTest(unittest.TestCase):
     """The temp file is next to the target, so os.replace cannot cross filesystems."""
