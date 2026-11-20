@@ -1456,7 +1456,7 @@ def decode_stellar_value(raw: bytes) -> StellarValue:
 
     upgrade_count = reader.read_uint32()
     if upgrade_count > 6:
-        raise XdrCodecError(f"upgrades count {upgrade_count} exceeds maximum 6")
+        raise XdrCodecError(f"upgrades vector length {upgrade_count} exceeds maximum 6")
     upgrades: list[bytes] = []
     for _ in range(upgrade_count):
         upgrades.append(reader.read_var_opaque(max_length=128))
@@ -1521,7 +1521,7 @@ def encode_stellar_value(val: StellarValue) -> bytes:
     writer.write_uint64(val.close_time)
 
     if len(val.upgrades) > 6:
-        raise XdrCodecError(f"upgrades count {len(val.upgrades)} exceeds maximum 6")
+        raise XdrCodecError(f"upgrades vector length {len(val.upgrades)} exceeds maximum 6")
     writer.write_uint32(len(val.upgrades))
     for u in val.upgrades:
         writer.write_var_opaque(u, max_length=128)

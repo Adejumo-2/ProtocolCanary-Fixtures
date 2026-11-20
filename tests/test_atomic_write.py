@@ -405,8 +405,9 @@ class BaselineHashTest(unittest.TestCase):
     scalar-endpoint and wide-integer fixtures (issues #503-#506) changed the
     pack's content, and again on 2026-11-20 when the one-byte padding,
     invalid ScVal discriminant/flag, Offer/Data LedgerEntry and muxed
-    operation-source fixtures (issues #507-#509, #514) changed it again: a
-    content change legitimately moves all four hashes,
+    operation-source fixtures (issues #507-#509, #514) changed it again, and
+    for the StellarValue upgrade-bound, Soroban ext V1 and AccountEntry
+    inflationDest fixtures (issues #515, #518, #523): a content change legitimately moves all four hashes,
     while the property being pinned stays the same -- the atomic write
     reproduces whatever bytes the tools produce.
 
@@ -421,13 +422,13 @@ class BaselineHashTest(unittest.TestCase):
 
     BASELINE = {
         "protocolcanary-fixtures-1.0.0.tar.gz":
-            "e0e330597fc15dd4b42d2027d37d8a6139699c5f0b82c606e8baa2dac9aa1173",
+            "20eb9f089380b040772a0d2c3e21be0f7d36f2eaae4551f75b2d1c75efb3df56",
         "protocolcanary-fixtures-1.0.0.manifest.json":
-            "3dac5498b98909b19847367ea5e5abcd46083bd293abdff9bd964e7db9c37d81",
+            "e0d416eeac25c2e38403e70d2fa1498c0b1097aa2faa21ef4d86ab9ecbc86258",
         "protocolcanary-fixtures-1.0.0.tar.gz.sha256":
-            "1d0181484331ea144f7541ab32f5e698df7e369789e9b81eec33d6c7862a4a46",
+            "bf55188e4e579bfb336538778497f5bfd029d9a7add2dfc1ce57f3ffbdb6b774",
         "registry-v1.json":
-            "0bd44efe14a941a351fae633b9f6d3566abde316ea862611eaff660b12c8e240",
+            "5ace434ef825d874704ae4fe2f16dc5b805d5f6fa9cac6fc4f5439628d205fb7",
     }
 
     def setUp(self) -> None:
